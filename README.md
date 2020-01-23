@@ -2,7 +2,7 @@ YoloCut
 
 Tool for cutting videos from frames which don't present desired objects.
 The intention was to automatically preprocess skate videos to cut out scenes without person and skateboard.
-In based my implementation on the YoloV3 examples from https://github.com/spmallick/learnopencv/tree/master/ObjectDetection-YOLO.
+I based my implementation on the YoloV3 examples from https://github.com/spmallick/learnopencv/tree/master/ObjectDetection-YOLO.
 
 Example:
 
