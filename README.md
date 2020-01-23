@@ -17,6 +17,6 @@ https://www.youtube.com/watch?v=eP5Uh_KXV5A
 
 
 TODO:
-# Train model on my own dataset
-# Detect if person is on skateboard
-# Speed it up
+- Train model on my own dataset
+- Detect if person is on skateboard
+- Speed it up
