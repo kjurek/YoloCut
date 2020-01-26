@@ -17,6 +17,7 @@ https://www.youtube.com/watch?v=eP5Uh_KXV5A
 
 
 TODO:
+- Try yolo9000
 - Use ffmpeg to cut video
 - Move config to json
 - Read args
