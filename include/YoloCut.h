@@ -7,6 +7,7 @@
 #include <opencv2/highgui.hpp>
 
 #include "ObjectDetector.h"
+#include "VideoCutter.h"
 
 struct Config
 {
@@ -15,29 +16,27 @@ struct Config
     float give_up_percent;
 };
 
-class VideoCutter
+class YoloCut
 {
 public:
-    cv::VideoWriter output_video;
-    cv::VideoWriter output_video_cut_out;
     Config config;
 
-    VideoCutter(ObjectDetector const& detector_);
-    ~VideoCutter();
+    YoloCut(std::unique_ptr<ObjectDetector> detector, std::unique_ptr<VideoCutter> cutter);
+    ~YoloCut();
 
-    void cut_video(std::string const& path_input, std::string const& path_output);
+    void cut_video(std::string const& path_input);
 
 private:
     void load_input_video(std::string const &path_video);
     void init_output_video(std::string const &path_output);
     void release();
 
-    void write_frames(std::vector<cv::Mat> const &frames, cv::VideoWriter &writer);
     std::vector<cv::Mat> read_frames();
 
     bool should_cut_frames(std::vector<cv::Mat> const &frames);
 private:
-    ObjectDetector detector;
+    std::unique_ptr<ObjectDetector> detector;
+    std::unique_ptr<VideoCutter> cutter;
     cv::VideoCapture input_video;
     unsigned int fps;
 };

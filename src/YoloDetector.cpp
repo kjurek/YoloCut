@@ -1,16 +1,16 @@
-#include "ObjectDetector.h"
+#include "YoloDetector.h"
 
 #include <fstream>
 #include <iostream>
 
-ObjectDetector::ObjectDetector(std::string const& path_config, std::string const& path_weights, std::string const& path_labels)
+YoloDetector::YoloDetector(YoloDetectorConfig const &config) : config(config)
 {
-    load_network(path_config, path_weights);
-    load_labels(path_labels);
+    load_network(config.path_config, config.path_weights);
+    load_labels(config.path_labels);
     init_layers_names();
 }
 
-void ObjectDetector::load_labels(std::string const& path_labels)
+void YoloDetector::load_labels(std::string const &path_labels)
 {
     labels.clear();
     std::ifstream file_labels(path_labels);
@@ -24,14 +24,14 @@ void ObjectDetector::load_labels(std::string const& path_labels)
     }
 }
 
-void ObjectDetector::load_network(std::string const& path_config, std::string const& path_weights)
+void YoloDetector::load_network(std::string const &path_config, std::string const &path_weights)
 {
     net = cv::dnn::readNetFromDarknet(path_config, path_weights);
     net.setPreferableBackend(cv::dnn::DNN_BACKEND_OPENCV);
     net.setPreferableTarget(cv::dnn::DNN_TARGET_CPU);
 }
 
-void ObjectDetector::init_layers_names()
+void YoloDetector::init_layers_names()
 {
     //Get the indices of the output layers, i.e. the layers with unconnected outputs
     std::vector<int> output_layers = net.getUnconnectedOutLayers();
@@ -46,15 +46,22 @@ void ObjectDetector::init_layers_names()
     }
 }
 
-bool ObjectDetector::detect_objects(cv::Mat const& frame, std::unordered_set<std::string> objects, double min_confidence)
+std::vector<DetectedObject> YoloDetector::detect_objects(cv::Mat const &frame)
 {
     cv::Mat blob;
-    cv::dnn::blobFromImage(frame, blob, scale_factor, size, mean, swap_channels, crop);
+    cv::dnn::blobFromImage(frame,
+                           blob,
+                           config.scale_factor,
+                           config.size,
+                           config.mean,
+                           config.swap_channels,
+                           config.crop);
     net.setInput(blob);
 
     std::vector<cv::Mat> outs;
     net.forward(outs, layers_names);
 
+    std::vector<DetectedObject> result;
     for (size_t i = 0; i < outs.size(); ++i) {
         // Scan through all the bounding boxes output from the network and keep only the
         // ones with high confidence scores. Assign the box's class label as the class
@@ -67,13 +74,10 @@ bool ObjectDetector::detect_objects(cv::Mat const& frame, std::unordered_set<std
             // Get the value and location of the maximum score
             minMaxLoc(scores, 0, &confidence, 0, &class_id_point);
 
-            if (confidence >= min_confidence && objects.count(labels[class_id_point.x])) {
-                objects.erase(labels[class_id_point.x]);
-            }
-            if (objects.empty()) {
-                return true;
+            if (confidence >= config.min_confidence) {
+                result.push_back({labels[class_id_point.x], confidence});
             }
         }
     }
-    return false;
+    return result;
 }
