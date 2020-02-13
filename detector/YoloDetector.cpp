@@ -3,7 +3,7 @@
 #include <fstream>
 #include <iostream>
 
-YoloDetector::YoloDetector(YoloDetectorConfig const &config) : config(config)
+YoloDetector::YoloDetector(Config const &config) : config(config)
 {
     load_network(config.path_config, config.path_weights);
     load_labels(config.path_labels);
@@ -46,7 +46,7 @@ void YoloDetector::init_layers_names()
     }
 }
 
-std::vector<DetectedObject> YoloDetector::detect_objects(cv::Mat const &frame)
+DetectedObjects YoloDetector::detect_objects(cv::Mat const &frame)
 {
     cv::Mat blob;
     cv::dnn::blobFromImage(frame,
@@ -61,11 +61,8 @@ std::vector<DetectedObject> YoloDetector::detect_objects(cv::Mat const &frame)
     std::vector<cv::Mat> outs;
     net.forward(outs, layers_names);
 
-    std::vector<DetectedObject> result;
+    DetectedObjects result;
     for (size_t i = 0; i < outs.size(); ++i) {
-        // Scan through all the bounding boxes output from the network and keep only the
-        // ones with high confidence scores. Assign the box's class label as the class
-        // with the highest score for the box.
         float *data = (float *) outs[i].data;
         for (int j = 0; j < outs[i].rows; ++j, data += outs[i].cols) {
             cv::Mat scores = outs[i].row(j).colRange(5, outs[i].cols);
@@ -75,7 +72,16 @@ std::vector<DetectedObject> YoloDetector::detect_objects(cv::Mat const &frame)
             minMaxLoc(scores, 0, &confidence, 0, &class_id_point);
 
             if (confidence >= config.min_confidence) {
-                result.push_back({labels[class_id_point.x], confidence});
+                int centerX = (int) (data[0] * frame.cols);
+                int centerY = (int) (data[1] * frame.rows);
+                int width = (int) (data[2] * frame.cols);
+                int height = (int) (data[3] * frame.rows);
+                int left = centerX - width / 2;
+                int top = centerY - height / 2;
+
+                result.labels.push_back(labels[class_id_point.x]);
+                result.positions.push_back(cv::Rect(left, top, width, height));
+                result.confidences.push_back(confidence);
             }
         }
     }
