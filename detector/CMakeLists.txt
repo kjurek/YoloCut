@@ -10,10 +10,12 @@ find_package(OpenCV REQUIRED)
 set(SOURCES
     main.cpp
     JsonOutput.cpp
+    CsvOutput.cpp
     YoloDetector.cpp
     DetectedObjects.h
     YoloDetector.h
     JsonOutput.h
+    CsvOutput.h
     Config.h)
 
 include_directories(.)

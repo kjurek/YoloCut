@@ -68,19 +68,10 @@ DetectedObjects YoloDetector::detect_objects(cv::Mat const &frame)
             cv::Mat scores = outs[i].row(j).colRange(5, outs[i].cols);
             cv::Point class_id_point;
             double confidence;
-            // Get the value and location of the maximum score
             minMaxLoc(scores, 0, &confidence, 0, &class_id_point);
 
             if (confidence >= config.min_confidence) {
-                int centerX = (int) (data[0] * frame.cols);
-                int centerY = (int) (data[1] * frame.rows);
-                int width = (int) (data[2] * frame.cols);
-                int height = (int) (data[3] * frame.rows);
-                int left = centerX - width / 2;
-                int top = centerY - height / 2;
-
                 result.labels.push_back(labels[class_id_point.x]);
-                result.positions.push_back(cv::Rect(left, top, width, height));
                 result.confidences.push_back(confidence);
             }
         }

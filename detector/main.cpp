@@ -2,20 +2,24 @@
 #include <string>
 
 #include "YoloDetector.h"
-#include "JsonOutput.h"
+#include "CsvOutput.h"
 
 int main(int argc, char** argv)
 {
-    // TODO: create args
-    std::string input_video_path = "/home/kjurek/run.mp4";
+    if (argc != 5) {
+        std::cout << "usage: ./detector input_video.mp4 yolo.cfg yolo.labels yolo.weights";
+        return EXIT_FAILURE;
+    }
+
+    std::string input_video_path = argv[1];
 
     Config config;
-    config.path_config = "/home/kjurek/Workspace/yolo/yolov3.cfg";
-    config.path_labels = "/home/kjurek/Workspace/yolo/coco.names";
-    config.path_weights = "/home/kjurek/Workspace/yolo/yolov3.weights";
+    config.path_config = argv[2];
+    config.path_labels = argv[3];
+    config.path_weights = argv[4];
 
     auto detector = YoloDetector(config);
-    auto output = JsonOutput(std::cout);
+    auto output = CsvOutput(std::cout);
 
     cv::VideoCapture input_video(input_video_path);
 
@@ -26,5 +30,5 @@ int main(int argc, char** argv)
     }
     input_video.release();
 
-    return 0;
+    return EXIT_SUCCESS;
 }

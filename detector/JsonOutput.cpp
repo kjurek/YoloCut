@@ -23,11 +23,8 @@ void JsonOutput::add(DetectedObjects const &objects)
 
         out << "{"
             << "\"label\":" << '"' << objects.labels[i] << '"' << ","
-            << "\"confidence\":" << objects.confidences[i] << ","
-            << "\"x\":" << objects.positions[i].x << ","
-            << "\"y\":" << objects.positions[i].y << ","
-            << "\"width\":" << objects.positions[i].width << ","
-            << "\"height\":" << objects.positions[i].height << "}";
+            << "\"confidence\":" << objects.confidences[i]
+            << "}";
     }
     out << "]";
     ++frame_count;

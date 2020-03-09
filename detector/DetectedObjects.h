@@ -8,5 +8,4 @@ struct DetectedObjects
 {
     std::vector<std::string> labels;
     std::vector<double> confidences;
-    std::vector<cv::Rect> positions;
 };
