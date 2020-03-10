@@ -21,3 +21,4 @@ set(SOURCES
 include_directories(.)
 add_executable(${PROJECT_NAME} ${SOURCES})
 target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS} )
+install(TARGETS ${PROJECT_NAME} DESTINATION /usr/local/bin)

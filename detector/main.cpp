@@ -7,7 +7,7 @@
 int main(int argc, char** argv)
 {
     if (argc != 5) {
-        std::cout << "usage: ./detector input_video.mp4 yolo.cfg yolo.labels yolo.weights";
+        std::cout << "usage: ./detector input_video.mp4 yolo.cfg yolo.labels yolo.weights" << std::endl;
         return EXIT_FAILURE;
     }
 
