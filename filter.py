@@ -14,6 +14,6 @@ if __name__ == "__main__":
         for row in reader:
             labels.add(row["label"])
 
-    if keywords.intersection(labels) == keywords:
+    if keywords in labels:
         shutil.copy(input_video, output_video)
 
